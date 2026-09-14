@@ -249,7 +249,7 @@
       detectedCoursesMap.set(strId, {
         id: strId,
         name: courseName,
-        url: `https://online.mospolytech.ru/course/view.php?id=${strId}`
+        url: `${window.location.origin}/course/view.php?id=${strId}`
       });
       saveDetectedCoursesDebounced();
     }

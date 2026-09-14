@@ -184,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       emptyMessageEl.style.display = "block";
       emptyMessageEl.textContent = searchQuery.trim()
         ? "Ничего не найдено по вашему запросу."
-        : "Курсы пока не загружены. Откройте страницу online.mospolytech.ru/my/courses.php";
+        : "Курсы пока не загружены. Откройте страницу курсов (online или lms.mospolytech.ru)";
       return;
     }
 
