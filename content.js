@@ -281,7 +281,12 @@
       }
     });
 
-    renderPageGroupBar();
+    const bar = document.getElementById("ch-group-switcher");
+    if (!bar) {
+      renderPageGroupBar();
+    } else {
+      updatePageGroupBar();
+    }
   };
 
   // Экранирование HTML
@@ -332,44 +337,76 @@
       visibleCount = Math.max(0, totalCourses - hiddenCoursesCache.length);
     }
 
+    // Сигнатура полного состояния: если ничего не изменилось, не трогаем DOM
+    const stateSig = `${activeGroupId}|${visibleCount}|${totalCourses}|${groupsCache
+      .map((g) => `${g.id}:${g.name}:${(g.courseIds || []).length}`)
+      .join(";")}`;
+
+    if (bar.dataset.stateSig === stateSig) {
+      return;
+    }
+    bar.dataset.stateSig = stateSig;
+
     // Обновляем счетчик
     const metaCountEl = bar.querySelector(".ch-meta-count");
     if (metaCountEl) {
       metaCountEl.textContent = `Показано: ${visibleCount} из ${totalCourses}`;
     }
 
-    // Обновляем кнопки групп
-    const chipsContainer = bar.querySelector(".ch-switcher-chips");
-    if (chipsContainer) {
-      chipsContainer.innerHTML = "";
+    // Сигнатура структуры кнопок: если изменился только activeGroupId,
+    // просто переключаем класс .active у существующих кнопок БЕЗ уничтожения DOM
+    const structureSig = `${totalCourses}|${groupsCache
+      .map((g) => `${g.id}:${g.name}:${(g.courseIds || []).length}`)
+      .join(";")}`;
 
-      // Кнопка "Все курсы"
-      const allBtn = document.createElement("button");
-      allBtn.type = "button";
-      allBtn.className = `ch-chip ${activeGroupId === "all" ? "active" : ""}`;
-      allBtn.title = "Показать все курсы";
-      allBtn.innerHTML = `<span>Все курсы</span><span class="ch-count">${totalCourses}</span>`;
-      allBtn.addEventListener("click", () => selectGroup("all"));
-      chipsContainer.appendChild(allBtn);
-
-      // Кнопки для каждой группы
-      groupsCache.forEach((g) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `ch-chip ${activeGroupId === g.id ? "active" : ""}`;
-        const count = (g.courseIds || []).length;
-        btn.title = `Фильтровать по группе «${g.name}» (повторный клик сбросит фильтр)`;
-        btn.innerHTML = `<span>📁 ${escapeHtml(g.name)}</span><span class="ch-count">${count}</span>`;
-        btn.addEventListener("click", () => selectGroup(g.id));
-        chipsContainer.appendChild(btn);
+    if (bar.dataset.structureSig === structureSig) {
+      const allChips = bar.querySelectorAll(".ch-chip");
+      allChips.forEach((chip) => {
+        const gid = chip.getAttribute("data-group-id");
+        if (gid === activeGroupId) {
+          chip.classList.add("active");
+        } else {
+          chip.classList.remove("active");
+        }
       });
+      return;
+    }
+    bar.dataset.structureSig = structureSig;
 
-      if (groupsCache.length === 0) {
-        const hint = document.createElement("span");
-        hint.className = "ch-hint";
-        hint.textContent = "💡 Создайте группы в расширении для быстрой фильтрации";
-        chipsContainer.appendChild(hint);
-      }
+    // Перерисовываем кнопки только если реально изменились группы
+    const chipsContainer = bar.querySelector(".ch-switcher-chips");
+    if (!chipsContainer) return;
+
+    chipsContainer.innerHTML = "";
+
+    // Кнопка "Все курсы"
+    const allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = `ch-chip ${activeGroupId === "all" ? "active" : ""}`;
+    allBtn.setAttribute("data-group-id", "all");
+    allBtn.title = "Показать все курсы";
+    allBtn.innerHTML = `<span>Все курсы</span><span class="ch-count">${totalCourses}</span>`;
+    allBtn.addEventListener("click", () => selectGroup("all"));
+    chipsContainer.appendChild(allBtn);
+
+    // Кнопки для каждой группы
+    groupsCache.forEach((g) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `ch-chip ${activeGroupId === g.id ? "active" : ""}`;
+      btn.setAttribute("data-group-id", g.id);
+      const count = (g.courseIds || []).length;
+      btn.title = `Фильтровать по группе «${g.name}» (повторный клик сбросит фильтр)`;
+      btn.innerHTML = `<span>📁 ${escapeHtml(g.name)}</span><span class="ch-count">${count}</span>`;
+      btn.addEventListener("click", () => selectGroup(g.id));
+      chipsContainer.appendChild(btn);
+    });
+
+    if (groupsCache.length === 0) {
+      const hint = document.createElement("span");
+      hint.className = "ch-hint";
+      hint.textContent = "💡 Создайте группы в расширении для быстрой фильтрации";
+      chipsContainer.appendChild(hint);
     }
   };
 
@@ -517,11 +554,21 @@
 
     // Наблюдатель за изменениями DOM при AJAX подгрузке
     let mutationDebounce = null;
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver((mutations) => {
+      // Игнорируем мутации внутри нашего бара переключения
+      const isInternal = mutations.every((m) => {
+        return (
+          (m.target && m.target.closest && m.target.closest("#ch-group-switcher")) ||
+          m.target.id === "ch-group-switcher" ||
+          m.target.id === "ch-dynamic-hidden-styles"
+        );
+      });
+      if (isInternal) return;
+
       if (mutationDebounce) clearTimeout(mutationDebounce);
       mutationDebounce = setTimeout(() => {
         scanPageForCourses();
-      }, 200);
+      }, 300);
     });
 
     if (document.body) {
