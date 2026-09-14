@@ -1,102 +1,96 @@
-﻿<p align=\"center\">
-  <img src=\"icons/icon128.png\" width=\"96\" height=\"96\" alt=\"Course Hider Logo\" style=\"border-radius: 20px;\">
+<p align="center">
+  <img src="icons/icon128.png" width="96" height="96" alt="Course Hider Logo">
 </p>
 
-<h1 align=\"center\">Course Hider — Мосполитех</h1>
+<h1 align="center">Course Hider — Мосполитех</h1>
 
-<p align=\"center\">
+<p align="center">
   <strong>Удобное расширение для организации, группировки и скрытия курсов в СДО Московского Политеха.</strong>
 </p>
 
-<p align=\"center\">
-  <img src=\"https://img.shields.io/badge/Manifest-V3-blue?style=flat-square\" alt=\"Manifest V3\">
-  <img src=\"https://img.shields.io/badge/Version-1.0.0-emerald?style=flat-square\" alt=\"Version 1.0.0\">
-  <img src=\"https://img.shields.io/badge/License-MIT-purple?style=flat-square\" alt=\"MIT License\">
-  <img src=\"https://img.shields.io/badge/Browsers-Chrome%20%7C%20Opera%20%7C%20Edge%20%7C%20Yandex-orange?style=flat-square\" alt=\"Browsers\">
+<p align="center">
+  <img src="https://img.shields.io/badge/Manifest-V3-blue?style=flat-square" alt="Manifest V3">
+  <img src="https://img.shields.io/badge/Version-1.0.0-emerald?style=flat-square" alt="Version 1.0.0">
+  <img src="https://img.shields.io/badge/License-MIT-purple?style=flat-square" alt="MIT License">
+  <img src="https://img.shields.io/badge/Browsers-Chrome%20%7C%20Opera%20%7C%20Edge%20%7C%20Yandex-orange?style=flat-square" alt="Browsers">
 </p>
 
 ---
 
-## 🎯 Проблема и решение
+## 🎯 Описание
 
-В личном кабинете СДО Мосполитеха ([online.mospolytech.ru/my/courses.php](https://online.mospolytech.ru/my/courses.php)) скапливаются десятки дисциплин за прошлые семестры и курсы. Найти актуальные предметы становится трудно.
+В личном кабинете СДО Мосполитеха ([online.mospolytech.ru/my/courses.php](https://online.mospolytech.ru/my/courses.php)) со временем скапливаются десятки дисциплин за прошлые семестры и учебные годы.
 
-**Course Hider** решает эту проблему:
-- Вы можете создать группы (например, «1 курс», «2 курс», «Важные», «Текущий семестр»).
-- В один клик переключаться между группами через выпадающий список.
-- Скрывать ненужные курсы навсегда или до востребования.
-- Все настройки хранятся локально в вашем браузере, а страница университета остаётся чистой без лишних кнопок.
+**Course Hider** позволяет навести порядок:
+- Создавать свои группы курсов (например, «1 курс», «2 курс», «Текущий семестр», «Важные»).
+- Быстро переключаться между группами через выпадающий список — на странице остаются только нужные дисциплины.
+- Скрывать ненужные курсы в один клик.
+- Страница университета остаётся чистой: никаких посторонних кнопок или плашек в верстке сайта.
+- Все настройки хранятся локально в вашем браузере (`chrome.storage.local`).
 
 ---
 
 ## ✨ Основные возможности
 
-- 📁 **Пользовательские группы**: объединяйте курсы по годам обучения, семестрам или приоритету.
-- 🔍 **Поиск по дисциплинам**: мгновенный поиск курсов как в общем списке, так и внутри редактора группы для быстрого добавления.
-- ⚡ **Мгновенное скрытие без мерцания**: использует динамические CSS-правила, поэтому скрытые курсы не мелькают при загрузке страницы.
-- 🎨 **Современный UI**: компактное темное окно в стилистике современных инструментов продуктивности с интуитивными тумблерами и иконками.
-- 🛡️ **100% приватность**: никаких внешних серверов, аналитики или трекеров. Все данные хранятся только в chrome.storage.local.
-- 🧹 **Чистый интерфейс сайта**: расширение не добавляет громоздких кнопок в разметку страницы университета, не закрывает кнопку «Наверх» и не ломает навигацию.
+- 📁 **Группы курсов**: объединяйте предметы по годам обучения, семестрам или важности.
+- 🔍 **Умный поиск**: поиск курсов по названию как в общем списке, так и внутри редактора группы для быстрого добавления.
+- ⚡ **Мгновенная фильтрация**: использует динамические CSS-правила, поэтому скрытые предметы не мелькают при обновлении страницы.
+- 🎨 **Современный интерфейс**: темная тема в стиле Catppuccin / Linear с векторными SVG-иконками и плавными переключателями.
+- 🛡️ **100% приватность**: расширение не собирает и никуда не передает данные. Работает автономно.
 
 ---
 
 ## 🚀 Установка (Режим разработчика)
 
-1. Клонируйте репозиторий или скачайте архив с кодом:
-   `ash
-   git clone https://github.com/your-username/course-hider-extension.git
-   `
-2. Откройте страницу управления расширениями в браузере:
-   - **Google Chrome**: chrome://extensions/
-   - **Opera**: opera://extensions/
-   - **Яндекс.Браузер**: rowser://extensions/
-   - **Microsoft Edge**: edge://extensions/
+1. Клонируйте репозиторий или скачайте исходный код:
+   ```bash
+   git clone https://github.com/ZZAY-GIT/Course-Hider.git
+   ```
+2. Откройте в браузере страницу расширений:
+   - **Google Chrome**: `chrome://extensions/`
+   - **Opera**: `opera://extensions/`
+   - **Яндекс.Браузер**: `browser://extensions/`
+   - **Microsoft Edge**: `edge://extensions/`
 3. Включите **«Режим разработчика»** (Developer mode) в правом верхнем углу.
-4. Нажмите **«Загрузить распакованное расширение»** (Load unpacked) и укажите папку проекта.
-5. Перейдите в [Мои курсы Мосполитеха](https://online.mospolytech.ru/my/courses.php) и откройте расширение на панели инструментов!
+4. Нажмите **«Загрузить распакованное расширение»** (Load unpacked) и выберите папку проекта.
+5. Откройте [Мои курсы Мосполитеха](https://online.mospolytech.ru/my/courses.php) и управляйте отображением через иконку расширения!
 
 ---
 
-## 📦 Публикация в магазины расширений
+## 📦 Сборка дистрибутива (Zip-архив)
 
-В проекте есть готовый скрипт упаковки. Выполните команду:
-`ash
+В проекте есть готовый скрипт для сборки чистого zip-архива без лишних файлов разработки:
+
+```bash
 python package.py
-`
-В папке elease/ будет создан готовый zip-архив course-hider-v1.0.0.zip.
+```
 
-### Публикация в Chrome Web Store:
-1. Зайдите в [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole).
-2. Нажмите **«Новый продукт»** (New Item) и перетащите файл elease/course-hider-v1.0.0.zip.
-3. Заполните описание, выберите категорию (например, *Производительность* / *Инструменты для учебы*).
-4. Во вкладке **Конфиденциальность (Privacy)** укажите ссылку на файл PRIVACY.md в вашем GitHub-репозитории.
-5. Отправьте расширение на модерацию.
-
-### Публикация в Opera Add-ons:
-1. Зайдите в [Opera Add-ons Developer Console](https://addons.opera.com/developer/).
-2. Нажмите **«Submit new add-on»** и загрузите тот же zip-архив.
-3. Заполните метаданные и отправьте на публикацию.
+После выполнения команды в папке `release/` появится готовый архив:
+```
+release/course-hider-v1.0.0.zip
+```
 
 ---
 
 ## 📁 Структура проекта
 
-`
-├── icons/                 # Иконки расширения (16, 32, 48, 128, 512 px)
-│   ├── icon16.png
-│   ├── icon32.png
-│   ├── icon48.png
-│   ├── icon128.png
-│   └── icon512.png
-├── content.js             # Контентный скрипт (сканирование и динамическое сокрытие)
-├── popup.html             # Всплывающее окно интерфейса расширения
-├── popup.js               # Логика групп, фильтрации и поиска
-├── manifest.json          # Манифест расширения (Manifest V3)
-├── package.py             # Скрипт сборки release zip архива
-├── PRIVACY.md             # Политика конфиденциальности
-├── LICENSE                # Лицензия MIT
-└── README.md              # Документация проекта
-`
+```text
+course-hider-extension/
+├── icons/
+│   ├── icon16.png        # Favicon и контекстное меню
+│   ├── icon32.png        # Windows HiDPI экраны
+│   ├── icon48.png        # Страница chrome://extensions
+│   ├── icon128.png       # Магазины расширений
+│   └── icon512.png       # Мастер-логотип высокого разрешения
+├── content.js            # Content script (тегирование и CSS-сокрытие)
+├── popup.html            # Разметка интерфейса расширения
+├── popup.js              # Управление группами, поиском и видимостью
+├── manifest.json         # Конфигурация Manifest V3
+├── package.py            # Скрипт сборки release zip
+├── PRIVACY.md            # Политика конфиденциальности
+├── LICENSE               # Лицензия MIT
+└── README.md             # Документация проекта
+```
 
 ---
 

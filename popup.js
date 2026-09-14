@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let currentTab = "courses";
   let searchQuery = "";
   let openEditorGroupId = null;
+  let openPopoverCourseId = null;
   const groupSearchQueries = {};
 
   // DOM Элементы
@@ -132,6 +133,24 @@ document.addEventListener("DOMContentLoaded", () => {
     saveState(() => render());
   };
 
+  // Переключение включения курса в конкретную группу
+  const toggleCourseInGroup = (courseId, groupId, isIncluded) => {
+    const g = groups.find((grp) => grp.id === groupId);
+    if (!g) return;
+    if (!g.courseIds) g.courseIds = [];
+
+    const strId = String(courseId);
+    if (isIncluded) {
+      if (!g.courseIds.map(String).includes(strId)) {
+        g.courseIds.push(strId);
+      }
+    } else {
+      g.courseIds = g.courseIds.map(String).filter((id) => id !== strId);
+    }
+
+    saveState(() => render());
+  };
+
   // Переключение индивидуальной видимости курса (в режиме "Все курсы")
   const toggleCourseVisibility = (course, isVisible) => {
     const id = String(course.id);
@@ -175,6 +194,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const li = document.createElement("li");
       li.className = "course-item";
 
+      const mainRow = document.createElement("div");
+      mainRow.className = "course-main-row";
+
       const infoDiv = document.createElement("div");
       infoDiv.className = "course-info";
 
@@ -196,27 +218,41 @@ document.addEventListener("DOMContentLoaded", () => {
       courseGroups.forEach((g) => {
         const badge = document.createElement("span");
         badge.className = "badge-col";
-        badge.textContent = g.name;
+        badge.textContent = `📁 ${g.name}`;
+
+        const delSpan = document.createElement("span");
+        delSpan.className = "badge-del";
+        delSpan.textContent = "×";
+        delSpan.title = `Убрать из группы «${g.name}»`;
+        delSpan.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleCourseInGroup(course.id, g.id, false);
+        });
+
+        badge.appendChild(delSpan);
         metaDiv.appendChild(badge);
       });
+
+      // Кнопка быстрого добавления в группу
+      if (groups.length > 0) {
+        const addTagBtn = document.createElement("button");
+        addTagBtn.type = "button";
+        addTagBtn.className = "btn-add-tag";
+        addTagBtn.textContent = openPopoverCourseId === course.id ? "Закрыть" : "+ Группа";
+        addTagBtn.title = "Привязать курс к группам";
+        addTagBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openPopoverCourseId = openPopoverCourseId === course.id ? null : course.id;
+          renderCoursesTab();
+        });
+        metaDiv.appendChild(addTagBtn);
+      }
 
       infoDiv.appendChild(nameEl);
       infoDiv.appendChild(metaDiv);
 
       const actionsDiv = document.createElement("div");
       actionsDiv.className = "course-actions";
-
-      // Кнопка быстрого добавления в группу
-      if (groups.length > 0) {
-        const assignBtn = document.createElement("button");
-        assignBtn.className = "btn-assign-col";
-        assignBtn.innerHTML = "📁 +";
-        assignBtn.title = "Добавить или убрать из групп";
-        assignBtn.addEventListener("click", () => {
-          showQuickAssignMenu(course);
-        });
-        actionsDiv.appendChild(assignBtn);
-      }
 
       // Тумблер:
       // В режиме группы = включен ли курс в текущую группу
@@ -253,41 +289,46 @@ document.addEventListener("DOMContentLoaded", () => {
       label.appendChild(slider);
       actionsDiv.appendChild(label);
 
-      li.appendChild(infoDiv);
-      li.appendChild(actionsDiv);
-      courseListEl.appendChild(li);
-    });
-  };
+      mainRow.appendChild(infoDiv);
+      mainRow.appendChild(actionsDiv);
+      li.appendChild(mainRow);
 
-  // Быстрое меню назначения групп курсу
-  const showQuickAssignMenu = (course) => {
-    if (groups.length === 0) return;
-    const strId = String(course.id);
+      // Всплывающее меню выбора групп для курса
+      if (openPopoverCourseId === course.id && groups.length > 0) {
+        const popover = document.createElement("div");
+        popover.className = "group-picker-popover";
 
-    let message = `Выберите группы для курса «${course.name}»:\n\n`;
-    groups.forEach((g, idx) => {
-      const has = (g.courseIds || []).map(String).includes(strId);
-      message += `${idx + 1}. [${has ? "✓ В группе" : "  Не в группе"}] ${g.name}\n`;
-    });
-    message += `\nВведите номер группы для переключения (1-${groups.length}):`;
+        const popoverTitle = document.createElement("div");
+        popoverTitle.className = "group-picker-title";
+        popoverTitle.textContent = "Выберите группы для курса:";
+        popover.appendChild(popoverTitle);
 
-    const choice = prompt(message);
-    if (!choice) return;
+        groups.forEach((g) => {
+          const itemLabel = document.createElement("label");
+          itemLabel.className = "group-picker-item";
 
-    const num = parseInt(choice.trim(), 10);
-    if (num >= 1 && num <= groups.length) {
-      const g = groups[num - 1];
-      if (!g.courseIds) g.courseIds = [];
-      const has = g.courseIds.map(String).includes(strId);
+          const chk = document.createElement("input");
+          chk.type = "checkbox";
+          const inGroup = (g.courseIds || []).map(String).includes(String(course.id));
+          chk.checked = inGroup;
 
-      if (has) {
-        g.courseIds = g.courseIds.map(String).filter((id) => id !== strId);
-      } else {
-        g.courseIds.push(strId);
+          chk.addEventListener("change", () => {
+            toggleCourseInGroup(course.id, g.id, chk.checked);
+          });
+
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = `📁 ${g.name}`;
+
+          itemLabel.appendChild(chk);
+          itemLabel.appendChild(nameSpan);
+          popover.appendChild(itemLabel);
+        });
+
+        li.appendChild(popover);
       }
 
-      saveState(() => render());
-    }
+      courseListEl.appendChild(li);
+    });
   };
 
   // Рендер вкладки "Группы"
