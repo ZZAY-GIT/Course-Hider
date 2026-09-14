@@ -28,28 +28,24 @@
         display: none !important;
       }
 
-      /* Панель быстрого переключения групп на странице курсов */
+      /* Панель быстрого переключения групп на странице курсов (в стиле Moodle) */
       #ch-group-switcher {
-        position: sticky;
-        top: 52px;
-        z-index: 998;
-        background: rgba(255, 255, 255, 0.97);
-        backdrop-filter: blur(8px);
-        border: 1px solid #d0d7de;
-        border-radius: 12px;
-        padding: 8px 14px;
-        margin: 12px 0 16px 0;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 12px;
+        gap: 10px;
+        padding: 6px 0 10px 0;
+        margin: 4px 0 12px 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+        box-shadow: none;
         box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        transition: all 0.2s ease;
+        font-family: inherit;
+        flex-wrap: wrap;
       }
       #ch-group-switcher.collapsed {
-        padding: 6px 12px;
+        padding: 4px 0;
       }
       #ch-group-switcher.collapsed .ch-switcher-chips,
       #ch-group-switcher.collapsed .ch-meta-count {
@@ -58,7 +54,7 @@
       .ch-switcher-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
         flex: 1;
         min-width: 0;
@@ -66,12 +62,10 @@
       .ch-switcher-label {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #57606a;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
         user-select: none;
         flex-shrink: 0;
       }
@@ -84,37 +78,38 @@
       .ch-chip {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        padding: 4px 12px;
-        border-radius: 20px;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 4px;
         font-size: 13px;
         font-weight: 500;
-        color: #24292f;
-        background: #f6f8fa;
-        border: 1px solid #d0d7de;
+        color: #0f6cbf;
+        background: #ffffff;
+        border: 1px solid #ced4da;
         cursor: pointer;
-        transition: all 0.15s ease;
-        line-height: 1.35;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+        line-height: 1.4;
         outline: none;
+        font-family: inherit;
       }
       .ch-chip:hover {
-        background: #ebf0f4;
-        border-color: #8c959f;
-        transform: translateY(-1px);
+        background: #f8f9fa;
+        color: #0c5699;
+        border-color: #adb5bd;
       }
       .ch-chip.active {
-        background: #0969da;
+        background: #0f6cbf;
         color: #ffffff;
-        border-color: #0969da;
-        font-weight: 600;
-        box-shadow: 0 2px 6px rgba(9, 105, 218, 0.28);
+        border-color: #0f6cbf;
+        font-weight: 500;
       }
       .ch-chip .ch-count {
         font-size: 11px;
-        padding: 1px 6px;
+        padding: 0 5px;
         border-radius: 10px;
-        background: rgba(0, 0, 0, 0.08);
-        color: inherit;
+        background: #e9ecef;
+        color: #495057;
+        line-height: 1.3;
       }
       .ch-chip.active .ch-count {
         background: rgba(255, 255, 255, 0.25);
@@ -122,7 +117,7 @@
       }
       .ch-hint {
         font-size: 12px;
-        color: #6e7781;
+        color: #6c757d;
         font-style: italic;
       }
       .ch-switcher-right {
@@ -131,70 +126,25 @@
         gap: 10px;
         flex-shrink: 0;
         font-size: 12px;
-        color: #57606a;
+        color: #6c757d;
       }
       .ch-meta-count {
         font-size: 12px;
-        color: #57606a;
-        font-weight: 500;
+        color: #6c757d;
       }
       .ch-collapse-btn {
         background: transparent;
-        border: 1px solid transparent;
+        border: none;
         cursor: pointer;
-        padding: 3px 8px;
-        border-radius: 6px;
-        color: #6e7781;
-        font-size: 11px;
-        font-weight: 600;
-        line-height: 1.3;
-        transition: all 0.15s;
+        padding: 0;
+        color: #6c757d;
+        font-size: 12px;
+        text-decoration: underline;
+        font-family: inherit;
+        transition: color 0.15s;
       }
       .ch-collapse-btn:hover {
-        background: #ebf0f4;
-        border-color: #d0d7de;
-        color: #24292f;
-      }
-
-      /* Поддержка тёмной темы */
-      @media (prefers-color-scheme: dark) {
-        #ch-group-switcher {
-          background: rgba(30, 30, 46, 0.95);
-          border-color: #45475a;
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
-        }
-        .ch-switcher-label {
-          color: #a6adc8;
-        }
-        .ch-chip {
-          background: #313244;
-          color: #cdd6f4;
-          border-color: #45475a;
-        }
-        .ch-chip:hover {
-          background: #45475a;
-          border-color: #585b70;
-        }
-        .ch-chip.active {
-          background: #89b4fa;
-          color: #11111b;
-          border-color: #89b4fa;
-        }
-        .ch-chip.active .ch-count {
-          background: rgba(0, 0, 0, 0.2);
-          color: #11111b;
-        }
-        .ch-hint, .ch-meta-count {
-          color: #a6adc8;
-        }
-        .ch-collapse-btn {
-          color: #a6adc8;
-        }
-        .ch-collapse-btn:hover {
-          background: #45475a;
-          border-color: #585b70;
-          color: #cdd6f4;
-        }
+        color: #0f6cbf;
       }
     `;
     (document.head || document.documentElement).appendChild(style);
@@ -477,16 +427,13 @@
     bar.innerHTML = `
       <div class="ch-switcher-left">
         <div class="ch-switcher-label">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-          </svg>
-          <span>Группы:</span>
+          <span>📁 Группы:</span>
         </div>
         <div class="ch-switcher-chips"></div>
       </div>
       <div class="ch-switcher-right">
         <span class="ch-meta-count"></span>
-        <button type="button" class="ch-collapse-btn" title="Свернуть / развернуть панель">${isCollapsed ? "▼ Развернуть" : "▲ Свернуть"}</button>
+        <button type="button" class="ch-collapse-btn" title="Скрыть/показать список групп">${isCollapsed ? "Развернуть" : "Свернуть"}</button>
       </div>
     `;
 
@@ -495,7 +442,7 @@
       bar.classList.toggle("collapsed");
       const collapsed = bar.classList.contains("collapsed");
       localStorage.setItem("ch_switcher_collapsed", collapsed ? "true" : "false");
-      collapseBtn.textContent = collapsed ? "▼ Развернуть" : "▲ Свернуть";
+      collapseBtn.textContent = collapsed ? "Развернуть" : "Свернуть";
     });
 
     try {
