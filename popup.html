@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Course Hider - Мосполитех</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 380px;
+      max-height: 570px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #1e1e2e;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    header {
+      padding: 10px 14px;
+      background-color: #181825;
+      border-bottom: 1px solid #313244;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #cdd6f4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    /* Выпадающий список выбора группы/режима */
+    .filter-selector-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #252538;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #3b3b54;
+      margin-bottom: 8px;
+    }
+    .filter-selector-box label {
+      font-size: 11px;
+      color: #a6adc8;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .filter-select {
+      flex: 1;
+      background: #313244;
+      border: 1px solid #45475a;
+      color: #cdd6f4;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .filter-select:focus {
+      border-color: #89b4fa;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 6px 10px;
+      background: #313244;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      color: #cdd6f4;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus {
+      border-color: #89b4fa;
+    }
+    .tabs {
+      display: flex;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px 4px;
+      background: transparent;
+      border: none;
+      color: #a6adc8;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn:hover {
+      color: #cdd6f4;
+    }
+    .tab-btn.active {
+      color: #89b4fa;
+      border-bottom-color: #89b4fa;
+      font-weight: 600;
+    }
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 360px;
+      padding: 8px 10px;
+    }
+    .course-list {
+      list-style: none;
+    }
+    .course-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      border-bottom: 1px solid #2a2a3c;
+      gap: 8px;
+      transition: background-color 0.15s;
+      border-radius: 4px;
+    }
+    .course-item:hover {
+      background-color: #262638;
+    }
+    .course-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .course-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: #cdd6f4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .course-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px;
+      flex-wrap: wrap;
+    }
+    .course-id {
+      font-size: 10px;
+      color: #6c7086;
+    }
+    .badge-col {
+      font-size: 9px;
+      background: #313244;
+      color: #89b4fa;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border: 1px solid #45475a;
+    }
+    .course-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .btn-assign-col {
+      background: #313244;
+      color: #a6adc8;
+      border: 1px solid #45475a;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .btn-assign-col:hover {
+      background: #45475a;
+      color: #ffffff;
+    }
+
+    /* Тумблер видимости */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 34px;
+      height: 18px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #45475a;
+      transition: .2s;
+      border-radius: 18px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 12px;
+      width: 12px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: #a6e3a1;
+    }
+    input:checked + .slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Раздел управления группами */
+    .group-creator {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .group-creator input {
+      flex: 1;
+      padding: 6px 10px;
+      background: #313244;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      color: #cdd6f4;
+      font-size: 12px;
+      outline: none;
+    }
+    .group-creator input:focus {
+      border-color: #89b4fa;
+    }
+    .group-creator button {
+      background: #89b4fa;
+      color: #11111b;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .group-creator button:hover {
+      background: #b4befe;
+    }
+
+    .group-card {
+      background: #252538;
+      border: 1px solid #36374f;
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .group-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .group-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #cdd6f4;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .group-count-tag {
+      font-size: 10px;
+      color: #6c7086;
+      font-weight: normal;
+    }
+    .group-card-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .group-btn {
+      padding: 3px 8px;
+      font-size: 11px;
+      border-radius: 4px;
+      border: 1px solid #45475a;
+      background: #313244;
+      color: #cdd6f4;
+      cursor: pointer;
+    }
+    .group-btn:hover {
+      background: #45475a;
+    }
+    .group-btn-del {
+      color: #f38ba8;
+      border-color: #583344;
+    }
+    .group-btn-del:hover {
+      background: #f38ba8;
+      color: #11111b;
+    }
+
+    /* Раскрывающийся редактор курсов внутри группы с поиском */
+    .group-editor-box {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #36374f;
+      display: none;
+    }
+    .group-editor-box.open {
+      display: block;
+    }
+    .group-search-bar {
+      margin-bottom: 6px;
+    }
+    .group-search-bar input {
+      width: 100%;
+      padding: 5px 8px;
+      background: #181825;
+      border: 1px solid #45475a;
+      border-radius: 4px;
+      color: #cdd6f4;
+      font-size: 11px;
+      outline: none;
+    }
+    .group-search-bar input:focus {
+      border-color: #89b4fa;
+    }
+    .group-editor-list {
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .group-course-check {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 2px;
+      font-size: 11px;
+      cursor: pointer;
+      color: #a6adc8;
+      border-radius: 3px;
+    }
+    .group-course-check:hover {
+      background: #2a2a3d;
+      color: #cdd6f4;
+    }
+    .group-course-check input {
+      cursor: pointer;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 24px 12px;
+      color: #6c7086;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    footer {
+      padding: 8px 12px;
+      background: #181825;
+      border-top: 1px solid #313244;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: #a6adc8;
+    }
+    .btn-action {
+      background: #313244;
+      color: #cdd6f4;
+      border: 1px solid #45475a;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-action:hover {
+      background: #45475a;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <h2>🎓 Курсы Мосполитех</h2>
+      <span id="activeModeBadge" class="badge-col">Все курсы</span>
+    </div>
+
+    <!-- Выпадающий список выбора группы/режима -->
+    <div class="filter-selector-box">
+      <label for="activeFilterSelect">Отображать:</label>
+      <select id="activeFilterSelect" class="filter-select">
+        <option value="all">Все курсы</option>
+      </select>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск курса по названию..." autocomplete="off">
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabCourses" data-tab="courses">Курсы (<span id="countCourses">0</span>)</button>
+    <button class="tab-btn" id="tabGroups" data-tab="groups">Группы (<span id="countGroups">0</span>)</button>
+    <button class="tab-btn" id="tabHidden" data-tab="hidden">Скрытые (<span id="countHidden">0</span>)</button>
+  </div>
+
+  <div class="content-area">
+    <!-- Вкладка 1: Список курсов -->
+    <div id="viewCourses">
+      <ul id="courseList" class="course-list"></ul>
+    </div>
+
+    <!-- Вкладка 2: Группы курсов (1 курс, 2 курс и т.д.) -->
+    <div id="viewGroups" style="display: none;">
+      <div class="group-creator">
+        <input type="text" id="newGroupNameInput" placeholder="Название (напр. 1 курс, 2 курс)...">
+        <button id="addGroupBtn">+ Создать</button>
+      </div>
+      <div id="groupsList"></div>
+    </div>
+
+    <!-- Вкладка 3: Скрытые вручную -->
+    <div id="viewHidden" style="display: none;">
+      <ul id="hiddenList" class="course-list"></ul>
+    </div>
+
+    <div id="emptyMessage" class="empty-state" style="display: none;"></div>
+  </div>
+
+  <footer>
+    <span id="statusInfo">Всего: 0</span>
+    <button id="restoreAll" class="btn-action">Сбросить скрытые</button>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
