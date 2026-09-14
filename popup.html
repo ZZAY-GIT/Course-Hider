@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <title>Course Hider - Мосполитех</title>
   <style>
+    :root {
+      --bg-base: #11111b;
+      --bg-surface: #181825;
+      --bg-card: #1e1e2e;
+      --bg-hover: #252538;
+      --border: #313244;
+      --border-focus: #89b4fa;
+      --text-main: #cdd6f4;
+      --text-muted: #a6adc8;
+      --text-sub: #6c7086;
+      --primary: #89b4fa;
+      --primary-hover: #b4befe;
+      --success: #a6e3a1;
+      --danger: #f38ba8;
+      --danger-hover: #e64553;
+      --radius: 8px;
+    }
     * {
       box-sizing: border-box;
       margin: 0;
@@ -11,105 +28,169 @@
     }
     body {
       width: 380px;
-      max-height: 570px;
+      max-height: 580px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #1e1e2e;
-      color: #cdd6f4;
+      background-color: var(--bg-base);
+      color: var(--text-main);
       display: flex;
       flex-direction: column;
       user-select: none;
+      overflow-x: hidden;
     }
+    /* Кастомный скроллбар */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #45475a;
+    }
+
     header {
-      padding: 10px 14px;
-      background-color: #181825;
-      border-bottom: 1px solid #313244;
+      padding: 12px 14px 10px;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
     }
     .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
-    h2 {
-      font-size: 15px;
-      font-weight: 600;
-      color: #cdd6f4;
+    .header-brand {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
+    .brand-logo {
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .brand-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.2px;
+    }
+    .badge-mode {
+      font-size: 10px;
+      background: var(--bg-card);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-weight: 500;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     /* Выпадающий список выбора группы/режима */
     .filter-selector-box {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #252538;
+      background: var(--bg-card);
       padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #3b3b54;
-      margin-bottom: 8px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
     }
     .filter-selector-box label {
       font-size: 11px;
-      color: #a6adc8;
+      color: var(--text-muted);
       white-space: nowrap;
-      font-weight: 500;
+      font-weight: 600;
     }
     .filter-select {
       flex: 1;
-      background: #313244;
-      border: 1px solid #45475a;
-      color: #cdd6f4;
-      border-radius: 4px;
-      padding: 4px 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 5px 8px;
       font-size: 12px;
       outline: none;
       cursor: pointer;
       font-weight: 500;
+      transition: border-color 0.2s;
     }
     .filter-select:focus {
-      border-color: #89b4fa;
+      border-color: var(--border-focus);
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-box svg {
+      position: absolute;
+      left: 10px;
+      width: 14px;
+      height: 14px;
+      color: var(--text-sub);
+      pointer-events: none;
     }
     .search-box input {
       width: 100%;
-      padding: 6px 10px;
-      background: #313244;
-      border: 1px solid #45475a;
-      border-radius: 6px;
-      color: #cdd6f4;
+      padding: 7px 10px 7px 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-main);
       font-size: 12px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: all 0.2s;
     }
     .search-box input:focus {
-      border-color: #89b4fa;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px rgba(137, 180, 250, 0.15);
     }
+
     .tabs {
       display: flex;
-      background: #181825;
-      border-bottom: 1px solid #313244;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
     }
     .tab-btn {
       flex: 1;
-      padding: 8px 4px;
+      padding: 9px 4px;
       background: transparent;
       border: none;
-      color: #a6adc8;
+      color: var(--text-muted);
       font-size: 12px;
       font-weight: 500;
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
       border-bottom: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
     }
     .tab-btn:hover {
-      color: #cdd6f4;
+      color: var(--text-main);
+      background: rgba(255,255,255,0.02);
     }
     .tab-btn.active {
-      color: #89b4fa;
-      border-bottom-color: #89b4fa;
+      color: var(--primary);
+      border-bottom-color: var(--primary);
       font-weight: 600;
     }
+    .tab-btn svg {
+      width: 14px;
+      height: 14px;
+    }
+
     .content-area {
       flex: 1;
       overflow-y: auto;
@@ -123,14 +204,15 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px;
-      border-bottom: 1px solid #2a2a3c;
-      gap: 8px;
-      transition: background-color 0.15s;
-      border-radius: 4px;
+      padding: 9px 10px;
+      border-bottom: 1px solid rgba(49, 50, 68, 0.6);
+      gap: 10px;
+      transition: all 0.15s ease;
+      border-radius: 6px;
+      margin-bottom: 2px;
     }
     .course-item:hover {
-      background-color: #262638;
+      background-color: var(--bg-hover);
     }
     .course-info {
       flex: 1;
@@ -139,10 +221,11 @@
     .course-name {
       font-size: 12px;
       font-weight: 500;
-      color: #cdd6f4;
+      color: var(--text-main);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      line-height: 1.4;
     }
     .course-meta {
       display: flex;
@@ -153,15 +236,16 @@
     }
     .course-id {
       font-size: 10px;
-      color: #6c7086;
+      color: var(--text-sub);
     }
     .badge-col {
       font-size: 9px;
-      background: #313244;
-      color: #89b4fa;
-      padding: 1px 5px;
+      background: rgba(137, 180, 250, 0.1);
+      color: var(--primary);
+      padding: 1px 6px;
       border-radius: 4px;
-      border: 1px solid #45475a;
+      border: 1px solid rgba(137, 180, 250, 0.25);
+      font-weight: 500;
     }
     .course-actions {
       display: flex;
@@ -170,25 +254,30 @@
       flex-shrink: 0;
     }
     .btn-assign-col {
-      background: #313244;
-      color: #a6adc8;
-      border: 1px solid #45475a;
-      border-radius: 4px;
-      padding: 2px 6px;
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 7px;
       font-size: 11px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.15s;
     }
     .btn-assign-col:hover {
-      background: #45475a;
-      color: #ffffff;
+      background: #313244;
+      color: var(--text-main);
+      border-color: #45475a;
     }
 
     /* Тумблер видимости */
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 34px;
-      height: 18px;
+      width: 36px;
+      height: 20px;
     }
     .toggle-switch input {
       opacity: 0;
@@ -204,13 +293,13 @@
       bottom: 0;
       background-color: #45475a;
       transition: .2s;
-      border-radius: 18px;
+      border-radius: 20px;
     }
     .slider:before {
       position: absolute;
       content: "";
-      height: 12px;
-      width: 12px;
+      height: 14px;
+      width: 14px;
       left: 3px;
       bottom: 3px;
       background-color: white;
@@ -218,7 +307,7 @@
       border-radius: 50%;
     }
     input:checked + .slider {
-      background-color: #a6e3a1;
+      background-color: var(--success);
     }
     input:checked + .slider:before {
       transform: translateX(16px);
@@ -227,42 +316,48 @@
     /* Раздел управления группами */
     .group-creator {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       margin-bottom: 12px;
     }
     .group-creator input {
       flex: 1;
-      padding: 6px 10px;
-      background: #313244;
-      border: 1px solid #45475a;
-      border-radius: 6px;
-      color: #cdd6f4;
+      padding: 7px 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-main);
       font-size: 12px;
       outline: none;
+      transition: border-color 0.2s;
     }
     .group-creator input:focus {
-      border-color: #89b4fa;
+      border-color: var(--border-focus);
     }
     .group-creator button {
-      background: #89b4fa;
+      background: var(--primary);
       color: #11111b;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius);
       font-weight: 600;
       font-size: 12px;
       cursor: pointer;
+      transition: background 0.15s;
     }
     .group-creator button:hover {
-      background: #b4befe;
+      background: var(--primary-hover);
     }
 
     .group-card {
-      background: #252538;
-      border: 1px solid #36374f;
-      border-radius: 6px;
-      padding: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
       margin-bottom: 8px;
+      transition: border-color 0.2s;
+    }
+    .group-card:hover {
+      border-color: #45475a;
     }
     .group-card-header {
       display: flex;
@@ -272,14 +367,14 @@
     .group-card-title {
       font-size: 13px;
       font-weight: 600;
-      color: #cdd6f4;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 6px;
     }
     .group-count-tag {
-      font-size: 10px;
-      color: #6c7086;
+      font-size: 11px;
+      color: var(--text-sub);
       font-weight: normal;
     }
     .group-card-actions {
@@ -287,51 +382,56 @@
       gap: 6px;
     }
     .group-btn {
-      padding: 3px 8px;
+      padding: 4px 9px;
       font-size: 11px;
-      border-radius: 4px;
-      border: 1px solid #45475a;
-      background: #313244;
-      color: #cdd6f4;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-main);
       cursor: pointer;
+      transition: all 0.15s;
+      font-weight: 500;
     }
     .group-btn:hover {
-      background: #45475a;
+      background: #313244;
+      border-color: #45475a;
     }
     .group-btn-del {
-      color: #f38ba8;
-      border-color: #583344;
+      color: var(--danger);
+      border-color: rgba(243, 139, 168, 0.3);
     }
     .group-btn-del:hover {
-      background: #f38ba8;
+      background: var(--danger);
       color: #11111b;
+      border-color: var(--danger);
     }
 
     /* Раскрывающийся редактор курсов внутри группы с поиском */
     .group-editor-box {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid #36374f;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
       display: none;
     }
     .group-editor-box.open {
       display: block;
     }
     .group-search-bar {
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .group-search-bar input {
       width: 100%;
-      padding: 5px 8px;
-      background: #181825;
-      border: 1px solid #45475a;
-      border-radius: 4px;
-      color: #cdd6f4;
+      padding: 6px 10px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-main);
       font-size: 11px;
       outline: none;
+      transition: border-color 0.2s;
     }
     .group-search-bar input:focus {
-      border-color: #89b4fa;
+      border-color: var(--border-focus);
     }
     .group-editor-list {
       max-height: 180px;
@@ -341,59 +441,71 @@
     .group-course-check {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 2px;
+      gap: 8px;
+      padding: 5px 6px;
       font-size: 11px;
       cursor: pointer;
-      color: #a6adc8;
-      border-radius: 3px;
+      color: var(--text-muted);
+      border-radius: 4px;
+      transition: background 0.1s;
     }
     .group-course-check:hover {
-      background: #2a2a3d;
-      color: #cdd6f4;
+      background: var(--bg-hover);
+      color: var(--text-main);
     }
     .group-course-check input {
       cursor: pointer;
+      accent-color: var(--primary);
     }
 
     .empty-state {
       text-align: center;
-      padding: 24px 12px;
-      color: #6c7086;
+      padding: 30px 14px;
+      color: var(--text-sub);
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.6;
     }
+    .empty-state svg {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 8px;
+      opacity: 0.5;
+    }
+
     footer {
-      padding: 8px 12px;
-      background: #181825;
-      border-top: 1px solid #313244;
+      padding: 9px 14px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 11px;
-      color: #a6adc8;
+      color: var(--text-muted);
     }
     .btn-action {
-      background: #313244;
-      color: #cdd6f4;
-      border: 1px solid #45475a;
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
       padding: 5px 10px;
-      border-radius: 4px;
+      border-radius: 5px;
       font-size: 11px;
       cursor: pointer;
       transition: all 0.15s;
     }
     .btn-action:hover {
-      background: #45475a;
-      color: #ffffff;
+      background: #313244;
+      border-color: #45475a;
     }
   </style>
 </head>
 <body>
   <header>
     <div class="header-top">
-      <h2>🎓 Курсы Мосполитех</h2>
-      <span id="activeModeBadge" class="badge-col">Все курсы</span>
+      <div class="header-brand">
+        <img src="icons/icon32.png" width="20" height="20" class="brand-logo" alt="Course Hider">
+        <span class="brand-title">Course Hider</span>
+      </div>
+      <span id="activeModeBadge" class="badge-mode">Все курсы</span>
     </div>
 
     <!-- Выпадающий список выбора группы/режима -->
@@ -405,14 +517,35 @@
     </div>
 
     <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Поиск курса по названию..." autocomplete="off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Поиск по названию или ID курса..." autocomplete="off">
     </div>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" id="tabCourses" data-tab="courses">Курсы (<span id="countCourses">0</span>)</button>
-    <button class="tab-btn" id="tabGroups" data-tab="groups">Группы (<span id="countGroups">0</span>)</button>
-    <button class="tab-btn" id="tabHidden" data-tab="hidden">Скрытые (<span id="countHidden">0</span>)</button>
+    <button class="tab-btn active" id="tabCourses" data-tab="courses">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+      Курсы (<span id="countCourses">0</span>)
+    </button>
+    <button class="tab-btn" id="tabGroups" data-tab="groups">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
+      Группы (<span id="countGroups">0</span>)
+    </button>
+    <button class="tab-btn" id="tabHidden" data-tab="hidden">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>
+      Скрытые (<span id="countHidden">0</span>)
+    </button>
   </div>
 
   <div class="content-area">
@@ -424,7 +557,7 @@
     <!-- Вкладка 2: Группы курсов (1 курс, 2 курс и т.д.) -->
     <div id="viewGroups" style="display: none;">
       <div class="group-creator">
-        <input type="text" id="newGroupNameInput" placeholder="Название (напр. 1 курс, 2 курс)...">
+        <input type="text" id="newGroupNameInput" placeholder="Название новой группы (напр. 1 курс)...">
         <button id="addGroupBtn">+ Создать</button>
       </div>
       <div id="groupsList"></div>

@@ -1,7 +1,10 @@
-﻿.DS_Store
+.DS_Store
 Thumbs.db
 *.crx
 *.pem
+*.zip
+release/
 node_modules/
 .vscode/
 .idea/
+
