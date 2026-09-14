@@ -622,6 +622,28 @@ document.addEventListener("DOMContentLoaded", () => {
     saveState(() => render());
   });
 
+  // Синхронизация при изменениях из content script (например, при смене группы на странице)
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === "local") {
+      let needRender = false;
+      if (changes.activeGroupId) {
+        activeGroupId = changes.activeGroupId.newValue || "all";
+        needRender = true;
+      }
+      if (changes.groups) {
+        groups = changes.groups.newValue || [];
+        needRender = true;
+      }
+      if (changes.hiddenCourses) {
+        hiddenCourses = changes.hiddenCourses.newValue || [];
+        needRender = true;
+      }
+      if (needRender) {
+        render();
+      }
+    }
+  });
+
   // Запуск
   loadData();
 });

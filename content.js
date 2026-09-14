@@ -27,6 +27,175 @@
       body.ch-filter-active [data-ch-id]:not([data-ch-allowed="true"]) {
         display: none !important;
       }
+
+      /* Панель быстрого переключения групп на странице курсов */
+      #ch-group-switcher {
+        position: sticky;
+        top: 52px;
+        z-index: 998;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(8px);
+        border: 1px solid #d0d7de;
+        border-radius: 12px;
+        padding: 8px 14px;
+        margin: 12px 0 16px 0;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        transition: all 0.2s ease;
+      }
+      #ch-group-switcher.collapsed {
+        padding: 6px 12px;
+      }
+      #ch-group-switcher.collapsed .ch-switcher-chips,
+      #ch-group-switcher.collapsed .ch-meta-count {
+        display: none !important;
+      }
+      .ch-switcher-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        flex: 1;
+        min-width: 0;
+      }
+      .ch-switcher-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #57606a;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        user-select: none;
+        flex-shrink: 0;
+      }
+      .ch-switcher-chips {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .ch-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #24292f;
+        background: #f6f8fa;
+        border: 1px solid #d0d7de;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        line-height: 1.35;
+        outline: none;
+      }
+      .ch-chip:hover {
+        background: #ebf0f4;
+        border-color: #8c959f;
+        transform: translateY(-1px);
+      }
+      .ch-chip.active {
+        background: #0969da;
+        color: #ffffff;
+        border-color: #0969da;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(9, 105, 218, 0.28);
+      }
+      .ch-chip .ch-count {
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.08);
+        color: inherit;
+      }
+      .ch-chip.active .ch-count {
+        background: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
+      .ch-hint {
+        font-size: 12px;
+        color: #6e7781;
+        font-style: italic;
+      }
+      .ch-switcher-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-shrink: 0;
+        font-size: 12px;
+        color: #57606a;
+      }
+      .ch-meta-count {
+        font-size: 12px;
+        color: #57606a;
+        font-weight: 500;
+      }
+      .ch-collapse-btn {
+        background: transparent;
+        border: 1px solid transparent;
+        cursor: pointer;
+        padding: 3px 8px;
+        border-radius: 6px;
+        color: #6e7781;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1.3;
+        transition: all 0.15s;
+      }
+      .ch-collapse-btn:hover {
+        background: #ebf0f4;
+        border-color: #d0d7de;
+        color: #24292f;
+      }
+
+      /* Поддержка тёмной темы */
+      @media (prefers-color-scheme: dark) {
+        #ch-group-switcher {
+          background: rgba(30, 30, 46, 0.95);
+          border-color: #45475a;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+        .ch-switcher-label {
+          color: #a6adc8;
+        }
+        .ch-chip {
+          background: #313244;
+          color: #cdd6f4;
+          border-color: #45475a;
+        }
+        .ch-chip:hover {
+          background: #45475a;
+          border-color: #585b70;
+        }
+        .ch-chip.active {
+          background: #89b4fa;
+          color: #11111b;
+          border-color: #89b4fa;
+        }
+        .ch-chip.active .ch-count {
+          background: rgba(0, 0, 0, 0.2);
+          color: #11111b;
+        }
+        .ch-hint, .ch-meta-count {
+          color: #a6adc8;
+        }
+        .ch-collapse-btn {
+          color: #a6adc8;
+        }
+        .ch-collapse-btn:hover {
+          background: #45475a;
+          border-color: #585b70;
+          color: #cdd6f4;
+        }
+      }
     `;
     (document.head || document.documentElement).appendChild(style);
   };
@@ -161,6 +330,185 @@
         processCourseElement(link.parentElement, id, cleanCourseTitle(link.textContent));
       }
     });
+
+    renderPageGroupBar();
+  };
+
+  // Экранирование HTML
+  const escapeHtml = (str) => {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
+  // Проверка: находимся ли мы на странице со списком курсов
+  const isCoursesListPage = () => {
+    return (
+      window.location.pathname.includes("/my") ||
+      document.querySelector('[data-region="courses-view"], [data-region="course-view"], .block-myoverview') !== null ||
+      detectedCoursesMap.size > 0
+    );
+  };
+
+  // Выбор группы курсов прямо на странице
+  const selectGroup = (groupId) => {
+    // Повторный клик по активной группе сбрасывает фильтр на "all"
+    const targetGroup = (activeGroupId === groupId && groupId !== "all") ? "all" : groupId;
+    activeGroupId = targetGroup;
+    chrome.storage.local.set({ activeGroupId: targetGroup }, () => {
+      updateDynamicHiddenStyles();
+      updatePageGroupBar();
+    });
+  };
+
+  // Обновление состояния панели групп на странице
+  const updatePageGroupBar = () => {
+    const bar = document.getElementById("ch-group-switcher");
+    if (!bar) {
+      renderPageGroupBar();
+      return;
+    }
+
+    const totalCourses = detectedCoursesMap.size;
+    let visibleCount = totalCourses;
+    if (activeGroupId && activeGroupId !== "all") {
+      const cur = groupsCache.find((g) => g.id === activeGroupId);
+      visibleCount = cur ? (cur.courseIds || []).length : 0;
+    } else {
+      visibleCount = Math.max(0, totalCourses - hiddenCoursesCache.length);
+    }
+
+    // Обновляем счетчик
+    const metaCountEl = bar.querySelector(".ch-meta-count");
+    if (metaCountEl) {
+      metaCountEl.textContent = `Показано: ${visibleCount} из ${totalCourses}`;
+    }
+
+    // Обновляем кнопки групп
+    const chipsContainer = bar.querySelector(".ch-switcher-chips");
+    if (chipsContainer) {
+      chipsContainer.innerHTML = "";
+
+      // Кнопка "Все курсы"
+      const allBtn = document.createElement("button");
+      allBtn.type = "button";
+      allBtn.className = `ch-chip ${activeGroupId === "all" ? "active" : ""}`;
+      allBtn.title = "Показать все курсы";
+      allBtn.innerHTML = `<span>Все курсы</span><span class="ch-count">${totalCourses}</span>`;
+      allBtn.addEventListener("click", () => selectGroup("all"));
+      chipsContainer.appendChild(allBtn);
+
+      // Кнопки для каждой группы
+      groupsCache.forEach((g) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `ch-chip ${activeGroupId === g.id ? "active" : ""}`;
+        const count = (g.courseIds || []).length;
+        btn.title = `Фильтровать по группе «${g.name}» (повторный клик сбросит фильтр)`;
+        btn.innerHTML = `<span>📁 ${escapeHtml(g.name)}</span><span class="ch-count">${count}</span>`;
+        btn.addEventListener("click", () => selectGroup(g.id));
+        chipsContainer.appendChild(btn);
+      });
+
+      if (groupsCache.length === 0) {
+        const hint = document.createElement("span");
+        hint.className = "ch-hint";
+        hint.textContent = "💡 Создайте группы в расширении для быстрой фильтрации";
+        chipsContainer.appendChild(hint);
+      }
+    }
+  };
+
+  // Отрисовка панели групп на странице над списком курсов
+  const renderPageGroupBar = () => {
+    if (!isCoursesListPage()) return;
+
+    let bar = document.getElementById("ch-group-switcher");
+    if (bar) {
+      updatePageGroupBar();
+      return;
+    }
+
+    // Ищем лучшее место вставки прямо над списком курсов
+    let targetContainer = null;
+    let referenceElement = null;
+
+    const overview = document.querySelector(
+      '[data-region="courses-view"], [data-region="course-view"], .block-myoverview'
+    );
+    const firstCourse = document.querySelector("[data-ch-id], [data-course-id], [data-courseid]");
+    const regionMain = document.querySelector("#region-main .region-main-content, #region-main, #page-content");
+
+    if (overview) {
+      targetContainer = overview.parentElement || overview;
+      referenceElement = overview;
+    } else if (firstCourse && firstCourse.parentElement) {
+      let cand = firstCourse.parentElement;
+      if (cand.parentElement && (cand.classList.contains("card-deck") || cand.classList.contains("row") || cand.id === "region-main")) {
+        targetContainer = cand.parentElement;
+        referenceElement = cand;
+      } else {
+        targetContainer = cand;
+        referenceElement = firstCourse;
+      }
+    } else if (regionMain) {
+      targetContainer = regionMain;
+      referenceElement = regionMain.firstChild;
+    } else if (document.body) {
+      targetContainer = document.body;
+      referenceElement = document.body.firstChild;
+    }
+
+    if (!targetContainer) return;
+
+    bar = document.createElement("div");
+    bar.id = "ch-group-switcher";
+    bar.className = "ch-switcher-bar";
+
+    const isCollapsed = localStorage.getItem("ch_switcher_collapsed") === "true";
+    if (isCollapsed) {
+      bar.classList.add("collapsed");
+    }
+
+    bar.innerHTML = `
+      <div class="ch-switcher-left">
+        <div class="ch-switcher-label">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Группы:</span>
+        </div>
+        <div class="ch-switcher-chips"></div>
+      </div>
+      <div class="ch-switcher-right">
+        <span class="ch-meta-count"></span>
+        <button type="button" class="ch-collapse-btn" title="Свернуть / развернуть панель">${isCollapsed ? "▼ Развернуть" : "▲ Свернуть"}</button>
+      </div>
+    `;
+
+    const collapseBtn = bar.querySelector(".ch-collapse-btn");
+    collapseBtn.addEventListener("click", () => {
+      bar.classList.toggle("collapsed");
+      const collapsed = bar.classList.contains("collapsed");
+      localStorage.setItem("ch_switcher_collapsed", collapsed ? "true" : "false");
+      collapseBtn.textContent = collapsed ? "▼ Развернуть" : "▲ Свернуть";
+    });
+
+    try {
+      if (referenceElement && referenceElement.parentElement === targetContainer) {
+        targetContainer.insertBefore(bar, referenceElement);
+      } else {
+        targetContainer.appendChild(bar);
+      }
+    } catch (e) {
+      document.body.appendChild(bar);
+    }
+
+    updatePageGroupBar();
   };
 
   // Инициализация
@@ -177,6 +525,7 @@
 
         updateDynamicHiddenStyles();
         scanPageForCourses();
+        renderPageGroupBar();
       }
     );
 
@@ -200,6 +549,7 @@
 
         if (needUpdate) {
           updateDynamicHiddenStyles();
+          updatePageGroupBar();
         }
       }
     });
