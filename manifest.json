@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Course Hider - Мосполитех",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Скрытие и группировка курсов в личном кабинете СДО Мосполитеха",
   "icons": {
     "16": "icons/icon16.png",

@@ -150,6 +150,24 @@
     (document.head || document.documentElement).appendChild(style);
   };
 
+  // Проверка: находимся ли мы на странице со списком курсов
+  const isCoursesListPage = () => {
+    const path = window.location.pathname.toLowerCase();
+    // Страница отдельного курса (/course/view.php) никогда не является списком курсов!
+    if (path.includes("/course/view.php")) {
+      return false;
+    }
+    // Страницы обзора курсов в личном кабинете (/my, /my/courses.php, /my/index.php)
+    if (path.includes("/my")) {
+      return true;
+    }
+    // Наличие блока обзора курсов Moodle
+    if (document.querySelector('[data-region="courses-view"], [data-region="course-view"], .block-myoverview')) {
+      return true;
+    }
+    return false;
+  };
+
   // Обновление CSS-правил скрытия
   const updateDynamicHiddenStyles = () => {
     let style = document.getElementById("ch-dynamic-hidden-styles");
@@ -157,6 +175,14 @@
       style = document.createElement("style");
       style.id = "ch-dynamic-hidden-styles";
       (document.head || document.documentElement).appendChild(style);
+    }
+
+    // Если мы находимся не на странице списка курсов (например, внутри конкретного курса /course/view.php),
+    // правила скрытия не применяем!
+    if (!isCoursesListPage()) {
+      document.body.classList.remove("ch-filter-active");
+      style.textContent = "";
+      return;
     }
 
     // Если выбрана конкретная группа курсов
@@ -282,10 +308,14 @@
     });
 
     const bar = document.getElementById("ch-group-switcher");
-    if (!bar) {
-      renderPageGroupBar();
-    } else {
-      updatePageGroupBar();
+    if (isCoursesListPage()) {
+      if (!bar) {
+        renderPageGroupBar();
+      } else {
+        updatePageGroupBar();
+      }
+    } else if (bar) {
+      bar.remove();
     }
   };
 
@@ -298,15 +328,6 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
-  };
-
-  // Проверка: находимся ли мы на странице со списком курсов
-  const isCoursesListPage = () => {
-    return (
-      window.location.pathname.includes("/my") ||
-      document.querySelector('[data-region="courses-view"], [data-region="course-view"], .block-myoverview') !== null ||
-      detectedCoursesMap.size > 0
-    );
   };
 
   // Выбор группы курсов прямо на странице
@@ -323,6 +344,10 @@
   // Обновление состояния панели групп на странице
   const updatePageGroupBar = () => {
     const bar = document.getElementById("ch-group-switcher");
+    if (!isCoursesListPage()) {
+      if (bar) bar.remove();
+      return;
+    }
     if (!bar) {
       renderPageGroupBar();
       return;
@@ -412,7 +437,11 @@
 
   // Отрисовка панели групп на странице над списком курсов
   const renderPageGroupBar = () => {
-    if (!isCoursesListPage()) return;
+    if (!isCoursesListPage()) {
+      const existing = document.getElementById("ch-group-switcher");
+      if (existing) existing.remove();
+      return;
+    }
 
     let bar = document.getElementById("ch-group-switcher");
     if (bar) {
@@ -509,7 +538,12 @@
 
         updateDynamicHiddenStyles();
         scanPageForCourses();
-        renderPageGroupBar();
+        if (isCoursesListPage()) {
+          renderPageGroupBar();
+        } else {
+          const bar = document.getElementById("ch-group-switcher");
+          if (bar) bar.remove();
+        }
       }
     );
 
