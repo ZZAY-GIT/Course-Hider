@@ -675,6 +675,117 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Ссылки в подвале и версия
+  const appVersionEl = document.getElementById("appVersion");
+  const githubLink = document.getElementById("githubLink");
+  const authorLink = document.getElementById("authorLink");
+  const updateBtn = document.getElementById("updateBtn");
+  const updateBtnText = document.getElementById("updateBtnText");
+
+  const manifestVersion = chrome.runtime.getManifest().version;
+  if (appVersionEl) {
+    appVersionEl.textContent = `v${manifestVersion}`;
+  }
+
+  const openExternal = (url) => {
+    if (chrome.tabs && chrome.tabs.create) {
+      chrome.tabs.create({ url });
+    } else {
+      window.open(url, "_blank");
+    }
+  };
+
+  if (githubLink) {
+    githubLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openExternal("https://github.com/ZZAY-GIT/Course-Hider");
+    });
+  }
+
+  if (authorLink) {
+    authorLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openExternal("https://github.com/ZZAY-GIT");
+    });
+  }
+
+  if (updateBtn) {
+    updateBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const targetUrl = updateBtn.getAttribute("data-release-url") || "https://github.com/ZZAY-GIT/Course-Hider/releases/latest";
+      openExternal(targetUrl);
+    });
+  }
+
+  // Сравнение версий semver (возвращает 1 если v1 > v2, -1 если v1 < v2, 0 если равны)
+  const compareVersions = (v1, v2) => {
+    const p1 = String(v1).replace(/^v/, "").split(".").map((n) => parseInt(n, 10) || 0);
+    const p2 = String(v2).replace(/^v/, "").split(".").map((n) => parseInt(n, 10) || 0);
+    const len = Math.max(p1.length, p2.length);
+    for (let i = 0; i < len; i++) {
+      const n1 = p1[i] || 0;
+      const n2 = p2[i] || 0;
+      if (n1 > n2) return 1;
+      if (n1 < n2) return -1;
+    }
+    return 0;
+  };
+
+  // Проверка обновлений через GitHub Releases API
+  const checkForUpdates = () => {
+    if (!updateBtn) return;
+
+    chrome.storage.local.get(["lastUpdateCheck", "latestReleaseData"], (data) => {
+      const now = Date.now();
+      const CACHE_DURATION = 30 * 60 * 1000; // 30 минут кэширования для защиты от лимитов API
+
+      const processRelease = (release) => {
+        if (!release || !release.tag_name) return;
+        const latestTag = release.tag_name;
+        if (compareVersions(latestTag, manifestVersion) > 0) {
+          if (updateBtnText) {
+            updateBtnText.textContent = `Обновить до ${latestTag}`;
+          }
+          const releaseUrl = release.html_url || "https://github.com/ZZAY-GIT/Course-Hider/releases/latest";
+          updateBtn.setAttribute("data-release-url", releaseUrl);
+          updateBtn.style.display = "inline-flex";
+        } else {
+          updateBtn.style.display = "none";
+        }
+      };
+
+      if (data.lastUpdateCheck && data.latestReleaseData && now - data.lastUpdateCheck < CACHE_DURATION) {
+        processRelease(data.latestReleaseData);
+        return;
+      }
+
+      fetch("https://api.github.com/repos/ZZAY-GIT/Course-Hider/releases/latest", {
+        headers: { Accept: "application/vnd.github.v3+json" }
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((release) => {
+          chrome.storage.local.set({
+            lastUpdateCheck: now,
+            latestReleaseData: {
+              tag_name: release.tag_name,
+              html_url: release.html_url
+            }
+          });
+          processRelease(release);
+        })
+        .catch((err) => {
+          // При ошибке сети или превышении лимитов используем кэш, если есть
+          if (data.latestReleaseData) {
+            processRelease(data.latestReleaseData);
+          }
+        });
+    });
+  };
+
   // Запуск
   loadData();
+  checkForUpdates();
 });
