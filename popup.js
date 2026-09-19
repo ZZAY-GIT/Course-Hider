@@ -732,12 +732,12 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Проверка обновлений через GitHub Releases API
-  const checkForUpdates = () => {
+  const checkForUpdates = (force = false) => {
     if (!updateBtn) return;
 
     chrome.storage.local.get(["lastUpdateCheck", "latestReleaseData"], (data) => {
       const now = Date.now();
-      const CACHE_DURATION = 30 * 60 * 1000; // 30 минут кэширования для защиты от лимитов API
+      const CACHE_DURATION = 60 * 1000; // 1 минута кэширования для быстрой реакции на новые релизы
 
       const processRelease = (release) => {
         if (!release || !release.tag_name) return;
@@ -754,12 +754,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       };
 
-      if (data.lastUpdateCheck && data.latestReleaseData && now - data.lastUpdateCheck < CACHE_DURATION) {
+      if (!force && data.lastUpdateCheck && data.latestReleaseData && now - data.lastUpdateCheck < CACHE_DURATION) {
         processRelease(data.latestReleaseData);
         return;
       }
 
-      fetch("https://api.github.com/repos/ZZAY-GIT/Course-Hider/releases/latest", {
+      fetch(`https://api.github.com/repos/ZZAY-GIT/Course-Hider/releases/latest?_nc=${now}`, {
+        cache: "no-cache",
         headers: { Accept: "application/vnd.github.v3+json" }
       })
         .then((res) => {
@@ -777,13 +778,26 @@ document.addEventListener("DOMContentLoaded", () => {
           processRelease(release);
         })
         .catch((err) => {
-          // При ошибке сети или превышении лимитов используем кэш, если есть
+          console.log("[Course Hider] Update check error:", err.message);
           if (data.latestReleaseData) {
             processRelease(data.latestReleaseData);
           }
         });
     });
   };
+
+  if (appVersionEl) {
+    appVersionEl.title = `Текущая версия v${manifestVersion}. Нажмите для принудительной проверки обновлений`;
+    appVersionEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      appVersionEl.textContent = "Проверка...";
+      checkForUpdates(true);
+      setTimeout(() => {
+        appVersionEl.textContent = `v${manifestVersion}`;
+      }, 800);
+    });
+  }
 
   // Запуск
   loadData();
