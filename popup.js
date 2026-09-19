@@ -56,6 +56,59 @@ document.addEventListener("DOMContentLoaded", () => {
     return groups.filter((g) => (g.courseIds || []).map(String).includes(strId));
   };
 
+  // Кастомное красивое модальное окно подтверждения
+  const showCustomConfirm = ({ title, desc, icon = "🗑️", confirmText = "Удалить", onConfirm }) => {
+    const modal = document.getElementById("confirmModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+    const cancelBtn = document.getElementById("modalCancelBtn");
+    const confirmBtn = document.getElementById("modalConfirmBtn");
+    const iconEl = modal ? modal.querySelector(".ch-modal-icon") : null;
+
+    if (!modal) {
+      if (confirm(desc || title)) onConfirm();
+      return;
+    }
+
+    if (iconEl) iconEl.textContent = icon;
+    if (modalTitle) modalTitle.textContent = title || "Подтверждение";
+    if (modalDesc) modalDesc.textContent = desc || "Вы уверены?";
+    if (confirmBtn) confirmBtn.textContent = confirmText;
+
+    const closeModal = () => {
+      modal.style.display = "none";
+      cleanup();
+    };
+
+    const handleConfirm = () => {
+      closeModal();
+      if (onConfirm) onConfirm();
+    };
+
+    const handleKeydown = (e) => {
+      if (e.key === "Escape") closeModal();
+      if (e.key === "Enter") handleConfirm();
+    };
+
+    const handleBackdropClick = (e) => {
+      if (e.target === modal) closeModal();
+    };
+
+    const cleanup = () => {
+      cancelBtn.removeEventListener("click", closeModal);
+      confirmBtn.removeEventListener("click", handleConfirm);
+      modal.removeEventListener("click", handleBackdropClick);
+      document.removeEventListener("keydown", handleKeydown);
+    };
+
+    cancelBtn.addEventListener("click", closeModal);
+    confirmBtn.addEventListener("click", handleConfirm);
+    modal.addEventListener("click", handleBackdropClick);
+    document.addEventListener("keydown", handleKeydown);
+
+    modal.style.display = "flex";
+  };
+
   // Все уникальные курсы (обнаруженные + скрытые)
   const getAllKnownCourses = () => {
     const map = new Map();
@@ -404,12 +457,19 @@ document.addEventListener("DOMContentLoaded", () => {
       delBtn.className = "group-btn group-btn-del";
       delBtn.innerHTML = "✕";
       delBtn.title = "Удалить группу";
-      delBtn.addEventListener("click", () => {
-        if (confirm(`Удалить группу «${g.name}»? (Курсы не удалятся)`)) {
-          groups = groups.filter((item) => item.id !== g.id);
-          if (activeGroupId === g.id) activeGroupId = "all";
-          saveState(() => render());
-        }
+      delBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        showCustomConfirm({
+          title: "Удалить группу?",
+          desc: `Группа «${g.name}» будет удалена. Сами курсы останутся на месте.`,
+          icon: "🗑️",
+          confirmText: "Удалить",
+          onConfirm: () => {
+            groups = groups.filter((item) => item.id !== g.id);
+            if (activeGroupId === g.id) activeGroupId = "all";
+            saveState(() => render());
+          }
+        });
       });
 
       actions.appendChild(editBtn);
@@ -649,8 +709,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Сброс скрытых
   restoreAllBtn.addEventListener("click", () => {
-    hiddenCourses = [];
-    saveState(() => render());
+    if (hiddenCourses.length === 0) return;
+    showCustomConfirm({
+      title: "Сбросить скрытые курсы?",
+      desc: "Все скрытые курсы снова станут видимыми на страницах СДО.",
+      icon: "👁️",
+      confirmText: "Сбросить",
+      onConfirm: () => {
+        hiddenCourses = [];
+        saveState(() => render());
+      }
+    });
   });
 
   // Синхронизация при изменениях из content script (например, при смене группы на странице)

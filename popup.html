@@ -639,6 +639,91 @@
       background: #313244;
       border-color: #45475a;
     }
+
+    /* Кастомное модальное окно подтверждения */
+    .ch-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(17, 17, 27, 0.75);
+      backdrop-filter: blur(3px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      animation: modalFadeIn 0.15s ease-out;
+    }
+    .ch-modal-box {
+      width: 100%;
+      max-width: 290px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      animation: modalScaleUp 0.15s ease-out;
+    }
+    .ch-modal-icon {
+      font-size: 26px;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .ch-modal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+    .ch-modal-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+      word-break: break-word;
+    }
+    .ch-modal-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .ch-modal-btn {
+      flex: 1;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+    .ch-modal-btn-cancel {
+      background: var(--bg-surface);
+      color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .ch-modal-btn-cancel:hover {
+      background: #313244;
+      color: var(--text-main);
+      border-color: #45475a;
+    }
+    .ch-modal-btn-danger {
+      background: var(--danger);
+      color: #11111b;
+    }
+    .ch-modal-btn-danger:hover {
+      background: var(--danger-hover);
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes modalScaleUp {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -738,6 +823,19 @@
       </div>
     </div>
   </footer>
+
+  <!-- Кастомное модальное окно подтверждения -->
+  <div id="confirmModal" class="ch-modal-backdrop" style="display: none;">
+    <div class="ch-modal-box">
+      <div class="ch-modal-icon">🗑️</div>
+      <div class="ch-modal-title" id="modalTitle">Удалить группу?</div>
+      <div class="ch-modal-desc" id="modalDesc">Группа будет удалена. Сами курсы останутся нетронутыми.</div>
+      <div class="ch-modal-actions">
+        <button id="modalCancelBtn" type="button" class="ch-modal-btn ch-modal-btn-cancel">Отмена</button>
+        <button id="modalConfirmBtn" type="button" class="ch-modal-btn ch-modal-btn-danger">Удалить</button>
+      </div>
+    </div>
+  </div>
 
   <script src="popup.js"></script>
 </body>
