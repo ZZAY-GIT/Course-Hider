@@ -254,12 +254,21 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      max-width: 140px;
+      min-width: 0;
+    }
+    .badge-col .badge-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
     .badge-col .badge-del {
       cursor: pointer;
       font-size: 11px;
       opacity: 0.6;
       line-height: 1;
+      flex-shrink: 0;
     }
     .badge-col .badge-del:hover {
       opacity: 1;
@@ -410,6 +419,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px;
     }
     .group-card-title {
       font-size: 13px;
@@ -418,15 +428,30 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+    .group-title-icon {
+      flex-shrink: 0;
+    }
+    .group-title-text {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
     }
     .group-count-tag {
       font-size: 11px;
       color: var(--text-sub);
       font-weight: normal;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .group-card-actions {
       display: flex;
       gap: 6px;
+      flex-shrink: 0;
     }
     .group-btn {
       padding: 4px 9px;
@@ -604,7 +629,7 @@
     <!-- Вкладка 2: Группы курсов (1 курс, 2 курс и т.д.) -->
     <div id="viewGroups" style="display: none;">
       <div class="group-creator">
-        <input type="text" id="newGroupNameInput" placeholder="Название новой группы (напр. 1 курс)...">
+        <input type="text" id="newGroupNameInput" maxlength="30" placeholder="Название новой группы (макс. 30 симв.)...">
         <button id="addGroupBtn">+ Создать</button>
       </div>
       <div id="groupsList"></div>

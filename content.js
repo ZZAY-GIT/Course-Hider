@@ -43,6 +43,8 @@
         box-sizing: border-box;
         font-family: inherit;
         flex-wrap: wrap;
+        width: 100%;
+        max-width: 100%;
       }
       #ch-group-switcher.collapsed {
         padding: 4px 0;
@@ -74,6 +76,8 @@
         align-items: center;
         gap: 6px;
         flex-wrap: wrap;
+        min-width: 0;
+        max-width: 100%;
       }
       .ch-chip {
         display: inline-flex;
@@ -91,6 +95,9 @@
         line-height: 1.4;
         outline: none;
         font-family: inherit;
+        max-width: 220px;
+        min-width: 0;
+        box-sizing: border-box;
       }
       .ch-chip:hover {
         background: #f8f9fa;
@@ -103,6 +110,16 @@
         border-color: #0f6cbf;
         font-weight: 500;
       }
+      .ch-chip-icon {
+        flex-shrink: 0;
+        line-height: 1;
+      }
+      .ch-chip-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+      }
       .ch-chip .ch-count {
         font-size: 11px;
         padding: 0 5px;
@@ -110,6 +127,7 @@
         background: #e9ecef;
         color: #495057;
         line-height: 1.3;
+        flex-shrink: 0;
       }
       .ch-chip.active .ch-count {
         background: rgba(255, 255, 255, 0.25);
@@ -125,12 +143,15 @@
         align-items: center;
         gap: 10px;
         flex-shrink: 0;
+        margin-left: auto;
         font-size: 12px;
         color: #6c757d;
+        white-space: nowrap;
       }
       .ch-meta-count {
         font-size: 12px;
         color: #6c757d;
+        white-space: nowrap;
       }
       .ch-collapse-btn {
         background: transparent;
@@ -142,6 +163,7 @@
         text-decoration: underline;
         font-family: inherit;
         transition: color 0.15s;
+        white-space: nowrap;
       }
       .ch-collapse-btn:hover {
         color: #0f6cbf;
@@ -410,7 +432,7 @@
     allBtn.className = `ch-chip ${activeGroupId === "all" ? "active" : ""}`;
     allBtn.setAttribute("data-group-id", "all");
     allBtn.title = "Показать все курсы";
-    allBtn.innerHTML = `<span>Все курсы</span><span class="ch-count">${totalCourses}</span>`;
+    allBtn.innerHTML = `<span class="ch-chip-name">Все курсы</span><span class="ch-count">${totalCourses}</span>`;
     allBtn.addEventListener("click", () => selectGroup("all"));
     chipsContainer.appendChild(allBtn);
 
@@ -422,7 +444,7 @@
       btn.setAttribute("data-group-id", g.id);
       const count = (g.courseIds || []).length;
       btn.title = `Фильтровать по группе «${g.name}» (повторный клик сбросит фильтр)`;
-      btn.innerHTML = `<span>📁 ${escapeHtml(g.name)}</span><span class="ch-count">${count}</span>`;
+      btn.innerHTML = `<span class="ch-chip-icon">📁</span><span class="ch-chip-name">${escapeHtml(g.name)}</span><span class="ch-count">${count}</span>`;
       btn.addEventListener("click", () => selectGroup(g.id));
       chipsContainer.appendChild(btn);
     });

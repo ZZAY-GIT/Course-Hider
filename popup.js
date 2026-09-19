@@ -37,6 +37,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const addGroupBtn = document.getElementById("addGroupBtn");
 
   // Вспомогательные функции
+  const escapeHtml = (str) => {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  };
+
   const isCourseHidden = (courseId) => {
     return hiddenCourses.some((c) => (typeof c === "object" ? String(c.id) : String(c)) === String(courseId));
   };
@@ -82,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     groups.forEach((g) => {
       const count = (g.courseIds || []).length;
-      html += `<option value="${g.id}" ${activeGroupId === g.id ? "selected" : ""}>📁 ${g.name} (${count})</option>`;
+      html += `<option value="${g.id}" ${activeGroupId === g.id ? "selected" : ""}>📁 ${escapeHtml(g.name)} (${count})</option>`;
     });
 
     activeFilterSelect.innerHTML = html;
@@ -218,7 +228,11 @@ document.addEventListener("DOMContentLoaded", () => {
       courseGroups.forEach((g) => {
         const badge = document.createElement("span");
         badge.className = "badge-col";
-        badge.textContent = `📁 ${g.name}`;
+        badge.title = `Группа: ${g.name}`;
+
+        const textSpan = document.createElement("span");
+        textSpan.className = "badge-text";
+        textSpan.textContent = `📁 ${g.name}`;
 
         const delSpan = document.createElement("span");
         delSpan.className = "badge-del";
@@ -229,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
           toggleCourseInGroup(course.id, g.id, false);
         });
 
+        badge.appendChild(textSpan);
         badge.appendChild(delSpan);
         metaDiv.appendChild(badge);
       });
@@ -353,7 +368,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const title = document.createElement("div");
       title.className = "group-card-title";
-      title.innerHTML = `📁 ${g.name} <span class="group-count-tag">(${(g.courseIds || []).length} курсов)</span>`;
+      title.title = g.name;
+
+      const iconSpan = document.createElement("span");
+      iconSpan.className = "group-title-icon";
+      iconSpan.textContent = "📁";
+
+      const nameSpan = document.createElement("span");
+      nameSpan.className = "group-title-text";
+      nameSpan.textContent = g.name;
+
+      const countTag = document.createElement("span");
+      countTag.className = "group-count-tag";
+      countTag.textContent = `(${(g.courseIds || []).length} курсов)`;
+
+      title.appendChild(iconSpan);
+      title.appendChild(nameSpan);
+      title.appendChild(countTag);
 
       const actions = document.createElement("div");
       actions.className = "group-card-actions";
@@ -440,7 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
               saveState(() => {
                 updateDropdown();
                 updateCounts();
-                title.innerHTML = `📁 ${g.name} <span class="group-count-tag">(${(g.courseIds || []).length} курсов)</span>`;
+                countTag.textContent = `(${(g.courseIds || []).length} курсов)`;
               });
             });
 
@@ -590,7 +621,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Создание новой группы
   const createGroup = () => {
-    const name = newGroupNameInput.value.trim();
+    const name = newGroupNameInput.value.trim().slice(0, 30);
     if (!name) return;
 
     const newGrp = {
